@@ -33,7 +33,7 @@ open abstract class BaseActivity : AppCompatActivity(), View.OnClickListener {
  * 在 Kotlin 中分为主构造函数和次级构造函数，其中主构造函数只能有一个，次构造函数可以有多个。
  * 如果构造函数只有一个且没有参数，则可以直接省略不写，如上面的示例中 BaseActivity 省略了无参构造函数，父类后面的括号表示调用父类无参数的构造函数。
  * 如果构造函数需要参数，则可以在类名后添加参数，如果需要在构造函数中执行语句的话，则需要添加 init 代码块，将语句写在代码块中，像这种直接跟在类名后面的构造函数就称之为主构造函数。（init 代码块是可以写多个的）。
- * 通过示例我们就可以看出，init 代码块执行顺序受声明的顺序影响，且优先于次级构造函数。package com.flyme.videoclips;
+ * 通过示例我们就可以看出，init 代码块执行顺序受声明的顺序影响，且优先于次级构造函数。Kotlin 的 init 代码块和 Java 一样，都在实例化时执行，并且执行顺序都在构造器之前。
 
  * 主构造函数中，加上var/val可以定义属性；次级构造函数中则不可以
  */
@@ -82,9 +82,14 @@ class Person3 private constructor(var name: String) {
 /**
  * 伴生对象
  *
+ * object声明的东西都是类似静态的，如果一个类中你只想让它一部分是类似静态的，那么就要使用companion object
+ *
  * 类内部的对象声明可以用 companion 关键字标记，这样它就与外部类关联在一起，我们就可以直接通过外部类访问到对象的内部元素。
  * 伴生对象一定要写在一个类的内部，作为这个类的一个伴生对象存在，伴生对象使用 companion object 两个关键字来声明。在 Kotlin 中就可以像 Java 调用静态方法一样，直接使用 类名.方法名 来使用。
  * 而在 Java  中则需要通过静态变量 Companion 来调用，实际上，这个 Companion 是编译器帮我们生成的一个对象，用来访问内部的方法和变量。
+ *
+ * 如果想写工具类的功能，直接创建文件，写 top-level「顶层」函数。
+ * 如果需要继承别的类或者实现接口，就用 object 或 companion object。
  */
 class StringUtils {
     companion object {
@@ -119,6 +124,18 @@ class Single private constructor() {
         val instance = Single()
     }
 
+}
+
+/**
+ * Kotlin 中声明常量（编译时常量）
+ * Kotlin 的常量必须声明在对象（包括伴生对象）或者「top-level 顶层」中，因为常量是静态的
+ * Kotlin 新增了修饰常量的 const 关键字
+ * Kotlin 中只有基本类型和 String 类型可以声明成常量
+ */
+class Sample {
+   companion object{
+       const val CONST_NUMBER = 1
+   }
 }
 
 /**
