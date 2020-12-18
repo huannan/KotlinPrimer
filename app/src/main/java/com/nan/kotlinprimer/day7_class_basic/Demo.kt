@@ -1,5 +1,6 @@
 package com.nan.kotlinprimer.day7_class_basic
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -34,17 +35,23 @@ open abstract class BaseActivity : AppCompatActivity(), View.OnClickListener {
  * 如果构造函数只有一个且没有参数，则可以直接省略不写，如上面的示例中 BaseActivity 省略了无参构造函数，父类后面的括号表示调用父类无参数的构造函数。
  * 如果构造函数需要参数，则可以在类名后添加参数，如果需要在构造函数中执行语句的话，则需要添加 init 代码块，将语句写在代码块中，像这种直接跟在类名后面的构造函数就称之为主构造函数。（init 代码块是可以写多个的）。
  * 通过示例我们就可以看出，init 代码块执行顺序受声明的顺序影响，且优先于次级构造函数。Kotlin 的 init 代码块和 Java 一样，都在实例化时执行，并且执行顺序都在构造器之前。
-
+ *
+ * 总体顺序：主-init-次
+ *
  * 主构造函数中，加上var/val可以定义属性；次级构造函数中则不可以
  */
-class Person1 constructor(var name: String) {
+class Person1 constructor(val name: String) {
 
-    init {
-        println("hello1")
+    constructor(age: Int) : this("哈哈") {
+        println("constructor")
     }
 
     init {
-        println("hello2")
+        println("hello1$name")
+    }
+
+    init {
+        println("hello2$name")
     }
 }
 
@@ -80,6 +87,29 @@ class Person3 private constructor(var name: String) {
 }
 
 /**
+ * 属性的 getter/setter 函数
+ *
+ * 关于「钩子」的作用，除了修改取值和赋值，也可以加一些自己的逻辑，
+ */
+class Person4 {
+    val name: String = ""
+        /**
+         * val 所声明的只读变量，在取值的时候仍然可能被修改，这也是和 Java 里的 final 的不同之处。大部分情况下 val 还是对应于 Java 中的 final 使用的
+         */
+        get() {
+            return "我的名字是$field"
+        }
+
+    var age: Int = 0
+        get() {
+            return field
+        }
+        set(value) {
+            field = value
+        }
+}
+
+/**
  * 伴生对象
  *
  * object声明的东西都是类似静态的，如果一个类中你只想让它一部分是类似静态的，那么就要使用companion object
@@ -93,6 +123,10 @@ class Person3 private constructor(var name: String) {
  */
 class StringUtils {
     companion object {
+        init {
+            // 静态域初始化
+        }
+
         fun isEmpty(string: String): Boolean {
             return string.length == 0
         }
@@ -107,6 +141,8 @@ class StringUtils {
  * 注：
  * 1. Kotlin 用对象表达式和对象声明来实现创建一个对某个类做了轻微改动的类的对象，且不需要去声明一个新的子类。类内部的对象声明可以用 companion 关键字标记，这样它就与外部类关联在一起，我们就可以直接通过外部类访问到对象的内部元素。
  * 2. 一般情况下在匿名内部类或者单例模式的时候使用object，而companion object一般用来声明静态域
+ * 3. object的意思很直接：创建一个类，并且创建一个这个类的对象。这个就是 object 的意思：对象。
+ * 4. 用 object 修饰的对象中的变量和函数都是静态的，但有时候，我们只想让类中的一部分函数和变量是静态的该怎么做呢？用companion object。companion 可以理解为伴随、伴生，表示修饰的对象和外部类绑定。这样的好处是调用的时候可以省掉对象名
  */
 class Single private constructor() {
 
@@ -133,9 +169,9 @@ class Single private constructor() {
  * Kotlin 中只有基本类型和 String 类型可以声明成常量
  */
 class Sample {
-   companion object{
-       const val CONST_NUMBER = 1
-   }
+    companion object {
+        const val CONST_NUMBER = 1
+    }
 }
 
 /**
@@ -212,10 +248,20 @@ fun execute(command: SuperCommand) {
 }
 
 fun main() {
-    Person1("小楠总")
+    Person1(10)
     Person2("小楠总")
 
     StringUtils.isEmpty("")
 
     Single.getInstance().sayHello()
+
+    /**
+     * 类型判断与转型
+     */
+    val activity: Activity = AppCompatActivity()
+    if (activity is AppCompatActivity) {
+        activity.setSupportActionBar(null)
+    }
+    (activity as AppCompatActivity).setSupportActionBar(null)
+    (activity as? AppCompatActivity)?.setSupportActionBar(null)
 }

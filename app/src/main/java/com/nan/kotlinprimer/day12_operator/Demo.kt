@@ -1,5 +1,8 @@
 package com.nan.kotlinprimer.day12_operator
 
+import android.content.res.Resources
+import android.util.TypedValue
+
 /**
  * 运算符重载
  *
@@ -70,8 +73,28 @@ sealed class CompareResult {
     }
 }
 
+fun method(s: String, i: Int) {
+
+}
+
+/**
+ * 扩展属性
+ */
+val Float.dp
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this,
+        Resources.getSystem().displayMetrics
+    )
+
+val RADIUS = 200F.dp
+
 fun main() {
     test1()
     test2()
     test3()
+
+    // 无Receiver变成有Receiver
+    val method4: String.(Int) -> Unit = ::method
+    "".method4(1)
 }

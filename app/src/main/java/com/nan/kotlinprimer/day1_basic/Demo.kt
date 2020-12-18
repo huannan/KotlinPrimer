@@ -36,6 +36,8 @@ fun main() {
  *
  * 可空变量类型 包含了 不可空变量类型
  * 不可随意互相赋值
+ *
+ * 关于空安全，最重要的是记住一点：所谓「可空不可空」，关注的全都是使用的时候，即「这个变量在使用时是否可能为空」。
  */
 fun testNullSafe() {
     // 不可空变量赋值给可空变量
@@ -47,6 +49,8 @@ fun testNullSafe() {
 
 /**
  * 函数定义
+ *
+ * str不可变，默认是属于val
  */
 fun testFunction(str: String): Int {
     return str.length
