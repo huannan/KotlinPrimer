@@ -20,14 +20,26 @@ class CoroutinesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_coroutines)
 
+        test2()
+    }
+
+    private fun test2() {
         CoroutineScope(Dispatchers.Main).launch {
-            val bitmap = getImageFromNetwork()
-            val bitmapWithWatermark = createWatermark(bitmap, "小楠总")
-            image.setImageBitmap(bitmapWithWatermark)
+            val bitmap: Deferred<Bitmap> = async { getImageFromNetwork() }
+            val imageDesc = async { getImageDescFromNetwork() }
+            updateUI(bitmap.await(), imageDesc.await())
         }
     }
 
-    fun test() {
+    private fun test1() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val bitmap = getImageFromNetwork()
+            val bitmapWithWatermark = createWatermark(bitmap, "小楠总")
+            updateUI(bitmap, "")
+        }
+    }
+
+    private fun test0() {
         // 方法一通常适用于单元测试的场景，而业务开发中不会用到这种方法，因为它是线程阻塞的。
         runBlocking {
             Log.e(TAG, "threadName=${Thread.currentThread().name}")
@@ -52,6 +64,16 @@ class CoroutinesActivity : AppCompatActivity() {
         BitmapFactory.decodeStream(inputStream)
     }
 
+    private suspend fun getImageDescFromNetwork(): String {
+        delay(2000L)
+        return "this is a fun image"
+    }
+
+    private fun updateUI(bitmap: Bitmap, imageDesc: String) {
+        imageView.setImageBitmap(bitmap)
+        textView.text = imageDesc
+    }
+
     private suspend fun createWatermark(bitmap: Bitmap, mark: String) = withContext(Dispatchers.IO) {
         val w = bitmap.width
         val h = bitmap.height
@@ -71,7 +93,7 @@ class CoroutinesActivity : AppCompatActivity() {
         canvas.save()
         // canvas.save(Canvas.ALL_SAVE_FLAG);
         canvas.restore()
-        return@withContext bmp
+        bmp
     }
 
 }
