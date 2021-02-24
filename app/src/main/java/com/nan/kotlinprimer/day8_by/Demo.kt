@@ -24,6 +24,9 @@ class BankWorker : Bank {
  * 如果代理类中实现了被代理接口的方法，则可以加上一些类似埋点的代码
  *
  * 注：实际上，Kotlin 会将动态代理在编译以后转换为静态代理去调用，而 Java 的动态代理本质上是通过反射去调用的，所以 Kotlin 的动态代理一定要比 Java 的动态代理效率高。
+ *
+ * 可以通过类委托的模式来减少继承
+ * 类委托的，编译器会优先使⽤⾃身重写的函数，⽽不是委托对象的函数
  */
 class BankWorkerProxy(private val bank: Bank) : Bank by bank {
 
